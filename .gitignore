@@ -76,7 +76,7 @@ ipch/
 *.opt
 
 # Proteus backup files
-*.pdsbac
+*.pdsbak
 *.workspace
 
 Thumbs.db
