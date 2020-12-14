@@ -12,12 +12,12 @@
 class I2c
 {
 public:
-	const static uint8_t Success = 1;
-	const static uint8_t Waiting = 2;
+	static const uint8_t Success = 1;
+	static const uint8_t Waiting = 2;
 
 	// constant compile-time value for optimization and compile-time error checking
 	template<uint8_t prescaler = 1, uint32_t frequency = 400000>
-	static uint8_t Initialize()
+	uint8_t Initialize()
 	{
 		static_assert(prescaler == 1 || prescaler == 4 || prescaler == 16 || prescaler == 64, "Invalid prescaler value");
 		switch (prescaler)
@@ -45,7 +45,7 @@ public:
 		return Success;
 	}
 	
-	static uint8_t Start(bool wait = true)
+	uint8_t Start(bool wait = true)
 	{
 		// Wait until the TWI module is ready
 		//while ((TWCR & (1 << TWINT)) == 0);
@@ -63,7 +63,7 @@ public:
 		return TW_STATUS;
 	}
 	
-	static uint8_t Stop()
+	uint8_t Stop()
 	{
 		// Wait until the TWI module is ready
 		//while ((TWCR & (1 << TWINT)) == 0);
@@ -98,7 +98,7 @@ public:
 		return TW_STATUS;
 	}
 	
-	static uint8_t Write(uint8_t data, bool wait = true)
+	uint8_t Write(uint8_t data, bool wait = true)
 	{
 		// Wait until the TWI module is ready
 		//while ((TWCR & (1 << TWINT)) == 0);
@@ -117,7 +117,7 @@ public:
 		return TW_STATUS;
 	}
 	
-	static uint8_t Read(uint8_t& data, bool send_ack)
+	uint8_t Read(uint8_t& data, bool send_ack)
 	{
 		// Wait until the TWI module is ready
 		//while ((TWCR & (1 << TWINT)) == 0);
@@ -140,7 +140,7 @@ public:
 	}
 	
 	// address is the 7-bit slave address without the W/R bit
-	static uint8_t Transmit(uint8_t address, const uint8_t* data, size_t length)
+	uint8_t Transmit(uint8_t address, const uint8_t* data, size_t length)
 	{
 		uint8_t status;
 		
@@ -164,7 +164,7 @@ public:
 	}
 	
 	// address is the 7-bit slave address without the W/R bit
-	static uint8_t TransmitFromFlash(uint8_t address, const uint8_t* data, size_t length)
+	uint8_t TransmitFromFlash(uint8_t address, const uint8_t* data, size_t length)
 	{
 		uint8_t status;
 		
@@ -187,3 +187,5 @@ public:
 		return Success;
 	}
 };
+
+extern I2c i2c;
