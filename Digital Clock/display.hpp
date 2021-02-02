@@ -11,30 +11,63 @@ public:
 	static const uint8_t i2c_address = 0x3c;
 	static const uint8_t display_width = 128;
 	static const uint8_t display_height = 64;
+	static const uint8_t max_x = display_width;
+	static const uint8_t max_y = display_height / 8;
 
 	void Initialize(bool display_on = false);
 	
 	void TurnOn()
 	{
-		
+		BeginCommand();
+		Send(DisplayOn);
+		End();
 	}
 	
 	void TurnOff()
 	{
-		
-		
+		BeginCommand();
+		Send(DisplayOff);
+		End();
 	}
 	
-	void SetContrst(uint8_t contrast)
+	void SetContrast(uint8_t contrast)
 	{
-		
-		
+		BeginCommand();
+		Send(SetContrastControl);
+		Send(contrast);
+		End();
 	}
 	
+	// bitmap should be bitmap[height][width]
 	void Draw(uint8_t* bitmap, size_t height, size_t width)
 	{
+		if (cursor_x + width > max_x)
+			return;
+		if (cursor_y + height > max_y)
+			return;
 		
+		BeginCommand();
+		Send(SetPageAddress);
+		Send(cursor_y);
+		Send(0x07);
+		Send(SetColumnAddress);
+		Send(cursor_x);
+		Send(cursor_x + width - 1);
+		End();
 		
+		uint8_t original_x = cursor_x, original_y = cursor_y;
+		BeginData();
+		for (size_t j = 0; j < height; j++)
+		{
+			for (size_t i = 0; i < width; i++)
+			{
+				Send(bitmap[j * width + i]);
+			}
+			//if (j < height - 1)
+				//SetCursor(original_x, original_y + j + 1);
+		}
+		End();
+		SetCursor(original_x + width, original_y);
 	}
 	
 	void DrawProgMem(uint8_t* bitmap, size_t height, size_t width)
@@ -45,7 +78,15 @@ public:
 	
 	void SetCursor(uint8_t x, uint8_t y)
 	{
-		// TODO: talk to the chip
+		BeginCommand();
+		Send(SetPageAddress);
+		Send(y);
+		Send(0x07);
+		Send(SetColumnAddress);
+		Send(x);
+		Send(0x7f);
+		End();
+		
 		cursor_x = x;
 		cursor_y = y;
 	}
@@ -62,14 +103,14 @@ public:
 		
 	}
 
-	void StartCommand()
+	void BeginCommand()
 	{
 		i2c.Start();
 		i2c.WriteAddress(i2c_address, true);
 		i2c.Write(0x00);
 	}
 	
-	void StartData()
+	void BeginData()
 	{
 		i2c.Start();
 		i2c.WriteAddress(i2c_address, true);
@@ -81,7 +122,7 @@ public:
 		i2c.Write(data);
 	}
 	
-	void Stop()
+	void End()
 	{
 		i2c.Stop();
 	}
