@@ -45,6 +45,8 @@ public:
 			return;
 		if (cursor_y + height > max_y)
 			return;
+			
+		uint8_t original_x = cursor_x, original_y = cursor_y;
 		
 		BeginCommand();
 		Send(SetPageAddress);
@@ -55,25 +57,38 @@ public:
 		Send(cursor_x + width - 1);
 		End();
 		
-		uint8_t original_x = cursor_x, original_y = cursor_y;
 		BeginData();
 		for (size_t j = 0; j < height; j++)
-		{
 			for (size_t i = 0; i < width; i++)
-			{
 				Send(bitmap[j * width + i]);
-			}
-			//if (j < height - 1)
-				//SetCursor(original_x, original_y + j + 1);
-		}
 		End();
 		SetCursor(original_x + width, original_y);
 	}
 	
 	void DrawProgMem(uint8_t* bitmap, size_t height, size_t width)
 	{
+		if (cursor_x + width > max_x)
+		return;
+		if (cursor_y + height > max_y)
+		return;
 		
+		uint8_t original_x = cursor_x, original_y = cursor_y;
 		
+		BeginCommand();
+		Send(SetPageAddress);
+		Send(cursor_y);
+		Send(0x07);
+		Send(SetColumnAddress);
+		Send(cursor_x);
+		Send(cursor_x + width - 1);
+		End();
+		
+		BeginData();
+		for (size_t j = 0; j < height; j++)
+			for (size_t i = 0; i < width; i++)
+				Send(pgm_read_byte(&bitmap[j * width + i]));
+		End();
+		SetCursor(original_x + width, original_y);
 	}
 	
 	void SetCursor(uint8_t x, uint8_t y)
@@ -99,8 +114,15 @@ public:
 	
 	void ClearScreen()
 	{
+		SetCursor(0, 0);
 		
+		BeginData();
+		for (size_t j = 0; j < max_y; j++)
+			for (size_t i = 0; i < max_x; i++)
+				Send(0);
+		End();
 		
+		SetCursor(0, 0);
 	}
 
 	void BeginCommand()
