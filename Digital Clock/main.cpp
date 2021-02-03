@@ -1,8 +1,7 @@
 ﻿#include <avr/io.h>
 #include <util/delay.h>
 
-#include "display.hpp"
-
+#include "text.hpp"
 
 int main(void)
 {
@@ -12,17 +11,17 @@ int main(void)
 	
 	_delay_ms(200);
 	
+	uint8_t img[3][3] = {{0xaa, 0x55, 0xaa}, {8, 0, 8}, {0xaa, 0x55, 0xaa}};
+	
 	display.Initialize(true);
-	display.StartData();
-	display.Send(0xaa);
-	display.Send(0x55);
-	display.Send(0xaa);
-	display.Send(0x55);
-	display.Send(0xaa);
-	display.Send(0x55);
-	display.Send(0xaa);
-	display.Send(0x55);
-	display.Stop();
+	display.Draw((uint8_t*)img, 3, 3);
+	display.Draw((uint8_t*)img, 3, 3);
+	
+	text.PrintProgMem(PSTR("Hello!\nTesting\t1234\b\bab"));
+	
+	text.GoToXY(3, 5);
+	text.PrintProgMem(PSTR("Hello!\nTesting\t1234\b\bab"));
+	
 
 	// set PORTC1 to output
 	DDRC |= 1 << DDC2;
