@@ -13,6 +13,9 @@ public:
 	static const uint8_t display_height = 64;
 	static const uint8_t max_x = display_width;
 	static const uint8_t max_y = display_height / 8;
+	
+	uint8_t cursor_x = 0;
+	uint8_t cursor_y = 0;
 
 	void Initialize(bool display_on = false);
 	
@@ -46,75 +49,45 @@ public:
 		if (cursor_y + height > max_y)
 			return;
 			
-		uint8_t original_x = cursor_x, original_y = cursor_y;
-		
-		BeginCommand();
-		Send(SetPageAddress);
-		Send(cursor_y);
-		Send(0x07);
-		Send(SetColumnAddress);
-		Send(cursor_x);
-		Send(cursor_x + width - 1);
-		End();
+		SetBounds(cursor_x, cursor_y, cursor_x + width - 1);
 		
 		BeginData();
 		for (size_t j = 0; j < height; j++)
 			for (size_t i = 0; i < width; i++)
 				Send(bitmap[j * width + i]);
 		End();
-		SetCursor(original_x + width, original_y);
+		cursor_x += width;
 	}
 	
 	void DrawProgMem(uint8_t* bitmap, size_t height, size_t width)
 	{
 		if (cursor_x + width > max_x)
-		return;
+			return;
 		if (cursor_y + height > max_y)
-		return;
+			return;
 		
-		uint8_t original_x = cursor_x, original_y = cursor_y;
-		
-		BeginCommand();
-		Send(SetPageAddress);
-		Send(cursor_y);
-		Send(0x07);
-		Send(SetColumnAddress);
-		Send(cursor_x);
-		Send(cursor_x + width - 1);
-		End();
+		SetBounds(cursor_x, cursor_y, cursor_x + width - 1);
 		
 		BeginData();
 		for (size_t j = 0; j < height; j++)
 			for (size_t i = 0; i < width; i++)
 				Send(pgm_read_byte(&bitmap[j * width + i]));
 		End();
-		SetCursor(original_x + width, original_y);
+		cursor_x += width;
 	}
 	
-	void SetCursor(uint8_t x, uint8_t y)
+	void GoToXY(uint8_t x, uint8_t y)
 	{
-		BeginCommand();
-		Send(SetPageAddress);
-		Send(y);
-		Send(0x07);
-		Send(SetColumnAddress);
-		Send(x);
-		Send(0x7f);
-		End();
+		if (x >= max_x || y >= max_y)
+			return;
 		
 		cursor_x = x;
 		cursor_y = y;
 	}
 	
-	void GetCursor(uint8_t& x, uint8_t& y)
-	{
-		x = cursor_x;
-		y = cursor_y;
-	}
-	
 	void ClearScreen()
 	{
-		SetCursor(0, 0);
+		SetBounds(0, 0);
 		
 		BeginData();
 		for (size_t j = 0; j < max_y; j++)
@@ -122,7 +95,7 @@ public:
 				Send(0);
 		End();
 		
-		SetCursor(0, 0);
+		cursor_x = cursor_y = 0;
 	}
 
 	void BeginCommand()
@@ -151,8 +124,18 @@ public:
 
 private:
 	static const uint8_t init_sequence[];
-	uint8_t cursor_x = 0;
-	uint8_t cursor_y = 0;
+	
+	void SetBounds(uint8_t x_start, uint8_t page_start, uint8_t x_end = 0x7f, uint8_t page_end = 0x07)
+	{
+		BeginCommand();
+		Send(SetPageAddress);
+		Send(page_start);
+		Send(page_end);
+		Send(SetColumnAddress);
+		Send(x_start);
+		Send(x_end);
+		End();
+	}
 	
 	enum Command : uint8_t
 	{
