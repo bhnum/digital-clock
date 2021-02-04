@@ -12,7 +12,7 @@ inline uint8_t modulo(int8_t a, uint8_t q)
 	return mod;
 }
 
-inline uint8_t posdiv(int8_t a, uint8_t q)
+inline int8_t posdiv(int8_t a, uint8_t q)
 {
 	return (a - modulo(a, q)) / q;
 }
