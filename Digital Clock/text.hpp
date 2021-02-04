@@ -30,6 +30,8 @@ public:
 				break;
 			default:
 			{
+				if (X() == MaxX() - 1)
+					Print('\n');
 				if (!set_cursor_next)
 				{
 					display.DrawProgMem((uint8_t*)&font[c - font_begin], 1, char_width, invert);
@@ -73,6 +75,9 @@ public:
 	
 	uint8_t X() { return display.cursor_x / char_width; }
 	uint8_t Y() { return display.cursor_y; }
+		
+	uint8_t MaxX() { return display.max_x / char_width; }
+	uint8_t MaxY() { return display.max_y; }
 	
 private:
 	static const uint8_t char_width = 6;
