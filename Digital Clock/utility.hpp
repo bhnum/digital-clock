@@ -27,3 +27,15 @@ inline uint8_t from_bcd(uint8_t a)
 	return (a >> 4) * 10 + (a & 0x0f);
 }
 
+template<typename T>
+T max(T left, T right)
+{
+	return left > right ? left : right;
+}
+
+template<typename T>
+T min(T left, T right)
+{
+	return left < right ? left : right;
+}
+
