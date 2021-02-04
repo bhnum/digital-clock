@@ -6,40 +6,42 @@
 #include "timer0.hpp"
 #include "timer2.hpp"
 #include "beeper.hpp"
+#include "app.hpp"
 
 int main(void)
 {
 	i2c.Initialize();
 	keypad.Initialize();
 	seven_segment.Initialize();
-	seven_segment.SetData(1, 2, 3, 4, true);
 	timer0.Initialize();
 	timer2.Initialize();
-	
-	uint8_t img[3][3] = {{0xaa, 0x55, 0xaa}, {8, 0, 8}, {0xaa, 0x55, 0xaa}};
-	
 	display.Initialize(true);
-	display.Draw((uint8_t*)img, 3, 3);
-	display.Draw((uint8_t*)img, 3, 3);
 	
-	text.PrintProgMem(PSTR("Hello!\nTesting\t\a1\a234\b\bab"), true);
-	
-	text.GoToXY(3, 5);
-	text.Print("Hello!\nTesting\t1234\b\aab\a");
-	
-	text.GoToXY(6, 0);
+	DateTime time, last_time;
+	App app = App();
 	
 	sei();
 	
-	beeper.TurnOn();
+	rtc.GetTime(time);
+	app.Run(Event::Start, Key::None, time);
 	
-	/* Replace with your application code */
 	while (1)
 	{
-		_delay_ms(200);
+		rtc.GetTime(time);
+		if (time != last_time)
+		{
+			seven_segment.SetData(time.hour / 10, time.hour % 10, time.minute / 10, time.minute % 10, time.second % 2 == 0);
+			app.Run(Event::TimeChange, Key::None, time);
+			last_time = time;
+		}
+		
 		Key key = keypad.GetKeyPress();
 		if (key != Key::None)
-		text.Print('0' + (uint8_t)key);
+		{
+			app.Run(Event::KeyPress, key, time);
+		}
+		else
+			_delay_ms(100);
 	}
 }
 
