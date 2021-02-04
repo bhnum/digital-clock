@@ -225,6 +225,12 @@
     <Compile Include="timer0.hpp">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="timer2.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="timer2.hpp">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="utility.hpp">
       <SubType>compile</SubType>
     </Compile>
