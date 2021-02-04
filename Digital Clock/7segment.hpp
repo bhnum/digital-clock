@@ -6,12 +6,15 @@
 
 // 4-digit 7-segment driver
 // mappings:
-// D0 to D6	-> 7-seg a to d
-// D7		-> 7-seg dp
-// B3 to B0 -> 7-seg digits 1 to 4
+// D0 to D6			-> 7-seg a to d
+// D7				-> 7-seg dp
+// B4, B2, B1, B0	-> 7-seg digits 1 to 4
 #define SEGMENT_PORT	PORTD
 #define DIGIT_PORT		PORTB
-
+#define PDIGIT1			PB4
+#define PDIGIT2			PB2
+#define PDIGIT3			PB1
+#define PDIGIT4			PB0
 
 class SevenSegment
 {
