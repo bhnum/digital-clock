@@ -1,10 +1,18 @@
 #pragma once
 
-// 4-digit 7-segment driver on port D
+#include <avr/interrupt.h>
+#include <avr/pgmspace.h>
+#include <stdint.h>
+
+// 4-digit 7-segment driver
 // mappings:
 // D0 to D6	-> 7-seg a to d
 // D7		-> 7-seg dp
 // B3 to B0 -> 7-seg digits 1 to 4
+#define SEGMENT_PORT	PORTD
+#define DIGIT_PORT		PORTB
+
+
 class SevenSegment
 {
 public:
@@ -18,7 +26,7 @@ public:
 		// TODO
 	}
 	
-	void TurnOff()
+	void TurnOn()
 	{
 		// TODO
 	}
@@ -39,10 +47,8 @@ public:
 	
 private:
 	static const uint8_t segments[] PROGMEM;
-	static const segment_port = PORTD;
-	static const digit_port = PORTB;
 
-	uint8_t digits[4]
+	uint8_t digits[4];
 	bool show_dots = false;
 };
 
