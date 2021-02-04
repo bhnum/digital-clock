@@ -35,10 +35,10 @@ public:
 	
 	void TurnOn()
 	{
-		uint8_t out = ~pgm_read_byte(&segments[digits[index]]);
-		if (index == 1 && show_dots)
+		uint8_t out = pgm_read_byte(&segments[digits[index]]);
+		if (show_dots)
 			out |= 0x80;
-		SEGMENT_PORT = out;
+		SEGMENT_PORT = ~out;
 		
 		switch (index)
 		{
