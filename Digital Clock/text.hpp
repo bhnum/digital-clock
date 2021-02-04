@@ -5,7 +5,7 @@
 class Text
 {
 public:
-	void Print(char c)
+	void Print(char c, bool invert = false)
 	{
 		switch (c)
 		{
@@ -22,7 +22,7 @@ public:
 			{
 				uint8_t x = X();
 				for (uint8_t i = 0; i < 4 - x % 4; i++)
-					Print(' ');
+					Print(' ', invert);
 				break;
 			}
 			case '\a': // print cursor
@@ -32,38 +32,38 @@ public:
 			{
 				if (!set_cursor_next)
 				{
-					display.DrawProgMem((uint8_t*)&font[c - font_begin], 1, char_width);
+					display.DrawProgMem((uint8_t*)&font[c - font_begin], 1, char_width, invert);
 					break;
 				}
 				set_cursor_next = false;
 				uint8_t d[char_width];
 				for (uint8_t i = 0; i < char_width; i++)
 					d[i] = pgm_read_byte(&font[c - font_begin][i]) | pgm_read_byte(&cursor[i]);
-				display.Draw(d, 1, char_width);
+				display.Draw(d, 1, char_width, invert);
 				break;
 			}
 		}
 	}
 	
-	void Print(const char* str)
+	void Print(const char* str, bool invert = false)
 	{
 		for (; *str != '\0'; str++)
-			Print(*str);
+			Print(*str, invert);
 		if (set_cursor_next)
-			Print(' ');
+			Print(' ', invert);
 	}
 	
-	void PrintProgMem(const char* str)
+	void PrintProgMem(const char* str, bool invert = false)
 	{
 		for (; ; str++)
 		{
 			char c = pgm_read_byte(str);
 			if (c == '\0')
 				break;
-			Print(c);
+			Print(c, invert);
 		}
 		if (set_cursor_next)
-			Print(' ');
+			Print(' ', invert);
 	}
 	
 	void GoToXY(uint8_t x, uint8_t y)

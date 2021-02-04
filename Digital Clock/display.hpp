@@ -42,7 +42,7 @@ public:
 	}
 	
 	// bitmap should be bitmap[height][width]
-	void Draw(uint8_t* bitmap, size_t height, size_t width)
+	void Draw(uint8_t* bitmap, size_t height, size_t width, bool invert = false)
 	{
 		if (cursor_x + width > max_x)
 			return;
@@ -54,12 +54,12 @@ public:
 		BeginData();
 		for (size_t j = 0; j < height; j++)
 			for (size_t i = 0; i < width; i++)
-				Send(bitmap[j * width + i]);
+				Send(bitmap[j * width + i] ^ (invert ? 0x00 : 0xff));
 		End();
 		cursor_x += width;
 	}
 	
-	void DrawProgMem(uint8_t* bitmap, size_t height, size_t width)
+	void DrawProgMem(uint8_t* bitmap, size_t height, size_t width, bool invert = false)
 	{
 		if (cursor_x + width > max_x)
 			return;
@@ -71,7 +71,7 @@ public:
 		BeginData();
 		for (size_t j = 0; j < height; j++)
 			for (size_t i = 0; i < width; i++)
-				Send(pgm_read_byte(&bitmap[j * width + i]));
+				Send(pgm_read_byte(&bitmap[j * width + i]) ^ (invert ? 0x00 : 0xff));
 		End();
 		cursor_x += width;
 	}

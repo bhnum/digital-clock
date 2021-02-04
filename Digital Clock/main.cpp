@@ -17,10 +17,10 @@ int main(void)
 	display.Draw((uint8_t*)img, 3, 3);
 	display.Draw((uint8_t*)img, 3, 3);
 	
-	text.PrintProgMem(PSTR("Hello!\nTesting\t\a1\a234\b\bab"));
+	text.PrintProgMem(PSTR("Hello!\nTesting\t\a1\a234\b\bab"), true);
 	
 	text.GoToXY(3, 5);
-	text.PrintProgMem(PSTR("Hello!\nTesting\t1234\b\aab\a"));
+	text.Print("Hello!\nTesting\t1234\b\aab\a");
 	
 
 	// set PORTC1 to output
