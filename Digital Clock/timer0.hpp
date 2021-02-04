@@ -9,12 +9,8 @@ class Timer0
 public:	
 	void Initialize()
 	{
-// 		if (!SIMULATION)
-			// Timer 0 period 0.256 ms ~ 4kHz for MCU clock 8MHz
-			TCCR0B = (0 << CS02) | (1 << CS01) | (0 << CS00);
-// 		else
-			// Timer 0 period 2.048 ms ~ 500Hz for MCU clock 8MHz
-// 			TCCR0B = (0 << CS02) | (1 << CS01) | (1 << CS00);
+		// Timer 0 period 0.256 ms ~ 4kHz for MCU clock 8MHz
+		TCCR0B = (0 << CS02) | (1 << CS01) | (0 << CS00);
 		
 		TCNT0 = 0x00;
 		OCR0A = 0x80;

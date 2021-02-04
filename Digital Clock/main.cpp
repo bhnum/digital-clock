@@ -4,6 +4,7 @@
 #include "text.hpp"
 #include "keypad.hpp"
 #include "timer0.hpp"
+#include "timer2.hpp"
 
 int main(void)
 {
@@ -12,6 +13,7 @@ int main(void)
 	seven_segment.Initialize();
 	seven_segment.SetData(1, 2, 3, 4, true);
 	timer0.Initialize();
+	timer2.Initialize();
 	
 	uint8_t img[3][3] = {{0xaa, 0x55, 0xaa}, {8, 0, 8}, {0xaa, 0x55, 0xaa}};
 	
@@ -27,6 +29,26 @@ int main(void)
 	text.GoToXY(6, 0);
 	
 	sei();
+	
+	while (1)
+	{
+		timer2.TurnOn();
+		_delay_ms(80);
+		timer2.TurnOff();
+		_delay_ms(80);
+		timer2.TurnOn();
+		_delay_ms(80);
+		timer2.TurnOff();
+		_delay_ms(80);
+		timer2.TurnOn();
+		_delay_ms(80);
+		timer2.TurnOff();
+		_delay_ms(80);
+		timer2.TurnOn();
+		_delay_ms(80);
+		timer2.TurnOff();
+		_delay_ms(440);
+	}
 	
 	/* Replace with your application code */
 	while (1)
