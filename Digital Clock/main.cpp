@@ -3,11 +3,14 @@
 
 #include "text.hpp"
 #include "keypad.hpp"
+#include "timer0.hpp"
 
 int main(void)
 {
 	i2c.Initialize();
 	keypad.Initialize();
+	seven_segment.Initialize();
+	timer0.Initialize();
 	
 	uint8_t img[3][3] = {{0xaa, 0x55, 0xaa}, {8, 0, 8}, {0xaa, 0x55, 0xaa}};
 	
@@ -29,8 +32,8 @@ int main(void)
 	/* Replace with your application code */
 	while (1)
 	{
-		_delay_us(2000);
-		keypad.Process();
+		_delay_ms(200);
+		//keypad.Process();
 		Key key = keypad.GetKeyPress();
 		if (key != Key::None)
 		text.Print('0' + (uint8_t)key);
