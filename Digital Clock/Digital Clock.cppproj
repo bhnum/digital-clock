@@ -198,6 +198,12 @@
     <Compile Include="i2c.hpp">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="keypad.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="keypad.hpp">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="main.cpp">
       <SubType>compile</SubType>
     </Compile>
