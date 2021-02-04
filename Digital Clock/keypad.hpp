@@ -1,7 +1,8 @@
 #pragma once
 
-#include <avr/interrupt.h>
 #include <avr/io.h>
+#include <avr/interrupt.h>
+#include <util/atomic.h>
 
 enum class Key : uint8_t
 {
@@ -68,18 +69,19 @@ public:
 	{
 		Key key = Key::None;
 		
-		cli();
-		if (buffer_up == 0xff)
-			key = Key::Up;
-		if (buffer_down == 0xff)
-			key = Key::Down;
-		if (buffer_left == 0xff)
-			key = Key::Left;
-		if (buffer_right == 0xff)
-			key = Key::Right;
-		if (buffer_ok == 0xff)
-			key = Key::Ok;
-		sei();
+		ATOMIC_BLOCK(ATOMIC_RESTORESTATE)
+		{
+			if (buffer_up == 0xff)
+				key = Key::Up;
+			if (buffer_down == 0xff)
+				key = Key::Down;
+			if (buffer_left == 0xff)
+				key = Key::Left;
+			if (buffer_right == 0xff)
+				key = Key::Right;
+			if (buffer_ok == 0xff)
+				key = Key::Ok;
+		}
 		
 		return key;
 	}
