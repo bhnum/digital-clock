@@ -182,6 +182,12 @@
     <Compile Include="7segment.hpp">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="beeper.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="beeper.hpp">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="datetime.cpp">
       <SubType>compile</SubType>
     </Compile>

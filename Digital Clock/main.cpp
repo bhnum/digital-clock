@@ -5,6 +5,7 @@
 #include "keypad.hpp"
 #include "timer0.hpp"
 #include "timer2.hpp"
+#include "beeper.hpp"
 
 int main(void)
 {
@@ -30,25 +31,7 @@ int main(void)
 	
 	sei();
 	
-	while (1)
-	{
-		timer2.TurnOn();
-		_delay_ms(80);
-		timer2.TurnOff();
-		_delay_ms(80);
-		timer2.TurnOn();
-		_delay_ms(80);
-		timer2.TurnOff();
-		_delay_ms(80);
-		timer2.TurnOn();
-		_delay_ms(80);
-		timer2.TurnOff();
-		_delay_ms(80);
-		timer2.TurnOn();
-		_delay_ms(80);
-		timer2.TurnOff();
-		_delay_ms(440);
-	}
+	beeper.TurnOn();
 	
 	/* Replace with your application code */
 	while (1)
