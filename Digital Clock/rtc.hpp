@@ -47,13 +47,13 @@ public:
 		i2c.Start();
 		i2c.WriteAddress(i2c_address, true);
 		i2c.Write(0);
-		i2c.Write(time.second);
-		i2c.Write(time.minute);
-		i2c.Write(time.hour);
-		i2c.Write(time.day_of_week);
-		i2c.Write(time.day);
-		i2c.Write(time.month);
-		i2c.Write(time.year);
+		i2c.Write(to_bcd(time.second));
+		i2c.Write(to_bcd(time.minute));
+		i2c.Write(to_bcd(time.hour));
+		i2c.Write(to_bcd(time.day_of_week));
+		i2c.Write(to_bcd(time.day));
+		i2c.Write(to_bcd(time.month));
+		i2c.Write(to_bcd(time.year));
 		i2c.Write(0);
 		i2c.Stop();
 	}

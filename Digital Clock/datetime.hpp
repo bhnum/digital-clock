@@ -22,9 +22,9 @@ public:
 		hour += posdiv(minute, 60);
 		minute = modulo(minute, 60);
 		
-		day += posdiv(hour, 60);
-		day_of_week += posdiv(hour, 60);
-		hour = modulo(hour, 60);
+		day += posdiv(hour, 24);
+		day_of_week += posdiv(hour, 24);
+		hour = modulo(hour, 24);
 		
 		month += posdiv(day - 1, month_days(month, year));
 		day = modulo(day - 1, month_days(month, year)) + 1;
@@ -107,8 +107,8 @@ private:
 	{
 		if (month == 2) // Feb
 		{
-			// leap years: year % 4 == 0, except 2000 is not a leap year
-			if (year != 0 && year % 4 == 0)
+			// leap years: year % 4 == 0, year 2000 is a leap year
+			if (year % 4 == 0)
 				return 29;
 			return 28;
 		}
