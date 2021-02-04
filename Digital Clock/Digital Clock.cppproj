@@ -170,6 +170,12 @@
     </ToolchainSettings>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="datetime.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="datetime.hpp">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="display.cpp">
       <SubType>compile</SubType>
     </Compile>
@@ -185,10 +191,19 @@
     <Compile Include="main.cpp">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="rtc.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="rtc.hpp">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="text.cpp">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="text.hpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="utility.hpp">
       <SubType>compile</SubType>
     </Compile>
   </ItemGroup>
