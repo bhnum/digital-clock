@@ -2,14 +2,12 @@
 #include <util/delay.h>
 
 #include "text.hpp"
+#include "keypad.hpp"
 
 int main(void)
 {
-	PORTC = 0xff;
-	
 	i2c.Initialize();
-	
-	_delay_ms(200);
+	keypad.Initialize();
 	
 	uint8_t img[3][3] = {{0xaa, 0x55, 0xaa}, {8, 0, 8}, {0xaa, 0x55, 0xaa}};
 	
@@ -22,15 +20,20 @@ int main(void)
 	text.GoToXY(3, 5);
 	text.Print("Hello!\nTesting\t1234\b\aab\a");
 	
-
-	// set PORTC1 to output
-	DDRC |= 1 << DDC2;
+	text.GoToXY(6, 0);
+	
+// 	KEYPAD_PORT |= (1 << KEYPAD_LEFT_RIGHT) | (1 << KEYPAD_UP_DOWN);
+// 	_delay_ms(2000);
+// 	KEYPAD_PORT &= ~((1 << KEYPAD_LEFT_RIGHT) | (1 << KEYPAD_UP_DOWN));
 
 	/* Replace with your application code */
 	while (1)
 	{
-		_delay_ms(1000);
-		PORTC ^= 1 << PORTC2;
+		_delay_us(2000);
+		keypad.Process();
+		Key key = keypad.GetKeyPress();
+		if (key != Key::None)
+		text.Print('0' + (uint8_t)key);
 	}
 }
 
