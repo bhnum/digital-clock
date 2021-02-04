@@ -25,8 +25,23 @@ public:
 					Print(' ');
 				break;
 			}
+			case '\a': // print cursor
+				set_cursor_next = true;
+				break;
 			default:
-				display.DrawProgMem((uint8_t*)&font[c - font_begin], 1, char_width);
+			{
+				if (!set_cursor_next)
+				{
+					display.DrawProgMem((uint8_t*)&font[c - font_begin], 1, char_width);
+					break;
+				}
+				set_cursor_next = false;
+				uint8_t d[char_width];
+				for (uint8_t i = 0; i < char_width; i++)
+					d[i] = pgm_read_byte(&font[c - font_begin][i]) | pgm_read_byte(&cursor[i]);
+				display.Draw(d, 1, char_width);
+				break;
+			}
 		}
 	}
 	
@@ -34,6 +49,8 @@ public:
 	{
 		for (; *str != '\0'; str++)
 			Print(*str);
+		if (set_cursor_next)
+			Print(' ');
 	}
 	
 	void PrintProgMem(const char* str)
@@ -45,6 +62,8 @@ public:
 				break;
 			Print(c);
 		}
+		if (set_cursor_next)
+			Print(' ');
 	}
 	
 	void GoToXY(uint8_t x, uint8_t y)
@@ -58,7 +77,9 @@ public:
 private:
 	static const uint8_t char_width = 6;
 	static const char font_begin = ' ';
-	static const char font[][6];
+	static const uint8_t font[][char_width];
+	static const uint8_t cursor[char_width];
+	bool set_cursor_next = false;
 };
 
 extern Text text;
