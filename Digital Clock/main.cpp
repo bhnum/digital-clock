@@ -10,6 +10,7 @@ int main(void)
 	i2c.Initialize();
 	keypad.Initialize();
 	seven_segment.Initialize();
+	seven_segment.SetData(1, 2, 3, 4, true);
 	timer0.Initialize();
 	
 	uint8_t img[3][3] = {{0xaa, 0x55, 0xaa}, {8, 0, 8}, {0xaa, 0x55, 0xaa}};
@@ -25,15 +26,12 @@ int main(void)
 	
 	text.GoToXY(6, 0);
 	
-// 	KEYPAD_PORT |= (1 << KEYPAD_LEFT_RIGHT) | (1 << KEYPAD_UP_DOWN);
-// 	_delay_ms(2000);
-// 	KEYPAD_PORT &= ~((1 << KEYPAD_LEFT_RIGHT) | (1 << KEYPAD_UP_DOWN));
-
+	sei();
+	
 	/* Replace with your application code */
 	while (1)
 	{
 		_delay_ms(200);
-		//keypad.Process();
 		Key key = keypad.GetKeyPress();
 		if (key != Key::None)
 		text.Print('0' + (uint8_t)key);

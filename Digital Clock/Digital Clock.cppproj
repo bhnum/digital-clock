@@ -69,6 +69,7 @@
     <ListValues>
       <Value>NDEBUG</Value>
       <Value>F_CPU=8000000UL</Value>
+      <Value>SIMULATION</Value>
     </ListValues>
   </avrgcc.compiler.symbols.DefSymbols>
   <avrgcc.compiler.directories.IncludePaths>
@@ -86,6 +87,7 @@
     <ListValues>
       <Value>NDEBUG</Value>
       <Value>F_CPU=8000000UL</Value>
+      <Value>SIMULATION</Value>
     </ListValues>
   </avrgcccpp.compiler.symbols.DefSymbols>
   <avrgcccpp.compiler.directories.IncludePaths>
