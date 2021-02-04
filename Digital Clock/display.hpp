@@ -54,7 +54,7 @@ public:
 		BeginData();
 		for (size_t j = 0; j < height; j++)
 			for (size_t i = 0; i < width; i++)
-				Send(bitmap[j * width + i] ^ (invert ? 0x00 : 0xff));
+				Send(bitmap[j * width + i] ^ (invert ? 0xff : 0x00));
 		End();
 		cursor_x += width;
 	}
@@ -71,7 +71,7 @@ public:
 		BeginData();
 		for (size_t j = 0; j < height; j++)
 			for (size_t i = 0; i < width; i++)
-				Send(pgm_read_byte(&bitmap[j * width + i]) ^ (invert ? 0x00 : 0xff));
+				Send(pgm_read_byte(&bitmap[j * width + i]) ^ (invert ? 0xff : 0x00));
 		End();
 		cursor_x += width;
 	}

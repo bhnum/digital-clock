@@ -1,4 +1,5 @@
 #include "display.hpp"
+#include <util/delay.h>
 
 const uint8_t Display::init_sequence[] PROGMEM = {
 	DisplayOff,
@@ -23,6 +24,7 @@ const uint8_t Display::init_sequence[] PROGMEM = {
 
 void Display::Initialize(bool display_on)
 {
+	_delay_ms(200);
 	BeginCommand();
 	for (size_t i = 0; i < sizeof(init_sequence); i++)
 		Send(pgm_read_byte(&init_sequence[i]));
