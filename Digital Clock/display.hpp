@@ -85,7 +85,7 @@ public:
 		cursor_y = y;
 	}
 	
-	void ClearScreen()
+	void Clear()
 	{
 		SetBounds(0, 0);
 		

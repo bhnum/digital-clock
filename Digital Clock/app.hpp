@@ -7,7 +7,7 @@
 
 enum class Event : uint8_t
 {
-	Start = 0, KeyPress, TimeChange
+	Start = 0, Refresh, DrawOver, KeyPress, TimeChange
 };
 
 class App
@@ -18,7 +18,7 @@ public:
 private:
 	enum class Page : uint8_t
 	{
-		Void = 0, MainMenu, SetTime
+		Void = 0, MainMenu, SetTime, Alarm, ManageAlarms, EditAlarm
 	};
 	
 	Page current_page = Page::MainMenu;
@@ -28,4 +28,6 @@ private:
 	void PageMainMenu(Event event, Key key, const DateTime& time);
 	void PageSetTime(Event event, Key key, const DateTime& time);
 	void PageAlarm(Event event, Key key, const DateTime& time);
+	void PageManangeAlarms(Event event, Key key, const DateTime& time);
+	void PageEditAlarm(Event event, Key key, const DateTime& time);
 };

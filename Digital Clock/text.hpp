@@ -30,7 +30,7 @@ public:
 				break;
 			default:
 			{
-				if (X() == MaxX() - 1)
+				if (X() == MaxX())
 					Print('\n');
 				if (!set_cursor_next)
 				{
