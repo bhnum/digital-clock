@@ -35,6 +35,7 @@ public:
 	void TurnOff()
 	{
 		on = false;
+		timer2.TurnOff();
 	}
 	
 private:

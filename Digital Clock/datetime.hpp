@@ -1,10 +1,13 @@
 #pragma once
 
+#include <avr/pgmspace.h>
 #include "utility.hpp"
 
 struct DateTime
 {
 public:
+	static const char DayName[7][10] PROGMEM;
+
 	int8_t year = 0; // starts from year 2000
 	int8_t month = 1;
 	int8_t day = 1; // day of month

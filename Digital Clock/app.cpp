@@ -149,7 +149,11 @@ void App::PageMainMenu(Event event, Key key, const DateTime& time)
 		text.GoToXY(6, 4);
 		print_time(time);
 		
-		text.GoToXY(5, 6);
+		text.GoToXY(6, 6);
+		text.PrintProgMem(DateTime::DayName[time.day_of_week - 1]);
+		text.PrintProgMem(PSTR("   "));
+		
+		text.GoToXY(5, 7);
 		print_date(time);
 	}
 	
@@ -192,25 +196,31 @@ void App::PageSetTime(Event event, Key key, const DateTime& time)
 	
 	if (event == Event::Start || event == Event::Refresh || event == Event::TimeChange)
 	{
-		text.GoToXY(6, 3);
+		text.GoToXY(6, 2);
 		print_time(time);
 		
-		text.GoToXY(5, 5);
+		text.GoToXY(6, 4);
+		text.PrintProgMem(DateTime::DayName[time.day_of_week - 1]);
+		text.PrintProgMem(PSTR("   "));
+		
+		text.GoToXY(5, 6);
 		print_date(time);
 	}
 	
 	if (event == Event::KeyPress)
 	{
 		if (index < 6)
-			text.GoToXY(6 + time_string_xpos_index(index), 4);
+			text.GoToXY(6 + time_string_xpos_index(index), 3);
+		else if (index == 6)
+			text.GoToXY(6, 5);
 		else
-			text.GoToXY(5 + date_string_xpos_index(index - 6), 6);
+			text.GoToXY(5 + date_string_xpos_index(index - 7), 7);
 		text.Print(' ');
 		
 		if (key == Key::Ok)
 			current_page = Page::MainMenu;
 		else if (key == Key::Right)
-			index = min(11, index + 1);
+			index = min(12, index + 1);
 		else if (key == Key::Left)
 			index = max(0, index - 1);
 		else
@@ -230,25 +240,29 @@ void App::PageSetTime(Event event, Key key, const DateTime& time)
 			else if (index == 5)
 				newtime.second += delta;
 			else if (index == 6)
-				newtime.year += delta * 10;
+				newtime.day_of_week += delta;
 			else if (index == 7)
-				newtime.year += delta;
+				newtime.year += delta * 10;
 			else if (index == 8)
-				newtime.month += delta * 10;
+				newtime.year += delta;
 			else if (index == 9)
-				newtime.month += delta;
+				newtime.month += delta * 10;
 			else if (index == 10)
+				newtime.month += delta;
+			else if (index == 1)
 				newtime.day += delta * 10;
-			else if (index == 11)
+			else if (index == 12)
 				newtime.day += delta;
 			newtime.normalize();
 			rtc.SetTime(newtime);
 		}
 	}
 	if (index < 6)
-		text.GoToXY(6 + time_string_xpos_index(index), 4);
+		text.GoToXY(6 + time_string_xpos_index(index), 3);
+	else if (index == 6)
+		text.GoToXY(6, 5);
 	else
-		text.GoToXY(5 + date_string_xpos_index(index - 6), 6);
+		text.GoToXY(5 + date_string_xpos_index(index - 7), 7);
 	text.Print('^');
 }
 
