@@ -388,7 +388,7 @@ void App::PageEditAlarm(Event event, Key key, const DateTime& time)
 		}
 		else
 		{
-			alarm_manager.GetAlarm(index, alarm);
+			alarm_manager.GetAlarm(edit_alarm_index, alarm);
 		}
 		index = 0;
 	}

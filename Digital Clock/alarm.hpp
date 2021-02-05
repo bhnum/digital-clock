@@ -5,29 +5,33 @@
 #include <util/atomic.h>
 #include "datetime.hpp"
 
-enum class AlarmOption
+enum class AlarmOption : uint8_t
 {
 	Once = 0, EveryDay
 };
 
 struct alignas(4) Alarm
 {
-	//char name[16];
 	DateTime time;
 	AlarmOption option;
+	
+	// TODO
+	//char message[16];
 };
-
-static_assert(sizeof(Alarm) % 4 == 0, "");
 
 class AlarmManager
 {
 public:
 	void Initialize()
 	{
-		eeprom_busy_wait();
 		ATOMIC_BLOCK (ATOMIC_RESTORESTATE)
 		{
 			number = eeprom_read_byte(0);
+			if (number == 0xff) // uninitialized
+			{
+				eeprom_update_byte(0, 0);
+				number = 0;
+			}
 		}
 	}
 	
@@ -43,7 +47,6 @@ public:
 	
 	void GetAlarm(size_t index, Alarm& alarm)
 	{
-		//eeprom_busy_wait();
 		ATOMIC_BLOCK (ATOMIC_RESTORESTATE)
 		{
 			eeprom_read_block(&alarm, GetPointer(index), sizeof(Alarm));
@@ -65,7 +68,6 @@ public:
 			for (size_t i = index; i < number - 1; i++)
 			{
 				Alarm alarm;
-				//eeprom_busy_wait();
 				eeprom_read_block(&alarm, GetPointer(i + 1), sizeof(Alarm));
 				eeprom_update_block(&alarm, GetPointer(i), sizeof(Alarm));
 			}
