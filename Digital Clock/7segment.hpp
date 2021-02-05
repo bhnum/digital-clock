@@ -38,7 +38,11 @@ public:
 		uint8_t out = pgm_read_byte(&segments[digits[index]]);
 		if (show_dots)
 			out |= 0x80;
+#ifdef SIMULATION
 		SEGMENT_PORT = ~out;
+#else
+		SEGMENT_PORT = out;
+#endif
 		
 		switch (index)
 		{

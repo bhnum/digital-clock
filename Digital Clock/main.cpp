@@ -11,6 +11,8 @@
 
 int main(void)
 {
+	_delay_ms(1000);
+	
 	i2c.Initialize();
 	keypad.Initialize();
 	seven_segment.Initialize();

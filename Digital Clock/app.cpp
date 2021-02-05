@@ -249,7 +249,7 @@ void App::PageSetTime(Event event, Key key, const DateTime& time)
 				newtime.month += delta * 10;
 			else if (index == 10)
 				newtime.month += delta;
-			else if (index == 1)
+			else if (index == 11)
 				newtime.day += delta * 10;
 			else if (index == 12)
 				newtime.day += delta;

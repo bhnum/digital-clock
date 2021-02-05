@@ -10,11 +10,13 @@ class Timer2
 public:	
 	void Initialize()
 	{
+		OC2A_PORT |= 1 << OC2A_BIT;
 		OC2A_DDR |= 1 << OC2A_BIT;
 	}
 	
 	void TurnOff()
 	{
+		TCCR2A = 0;
 		TCCR2B = 0;
 	}
 	
