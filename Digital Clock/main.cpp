@@ -4,7 +4,6 @@
 #include "text.hpp"
 #include "keypad.hpp"
 #include "timer0.hpp"
-#include "timer2.hpp"
 #include "beeper.hpp"
 #include "app.hpp"
 #include "alarm.hpp"
@@ -17,7 +16,6 @@ int main(void)
 	keypad.Initialize();
 	seven_segment.Initialize();
 	timer0.Initialize();
-	timer2.Initialize();
 	display.Initialize(true);
 	alarm_manager.Initialize();
 	

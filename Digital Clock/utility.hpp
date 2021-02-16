@@ -2,7 +2,12 @@
 
 #include <stdint.h>
 
-// This class contains utility functions
+// constants
+
+const uint8_t current_version = 0x21;
+
+
+// utility functions
 
 inline uint8_t modulo(int8_t a, uint8_t q)
 {

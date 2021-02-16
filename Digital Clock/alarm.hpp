@@ -1,8 +1,9 @@
 #pragma once
 
-#include <stddef.h>
+#include <avr/io.h>
 #include <avr/eeprom.h>
 #include <util/atomic.h>
+#include "utility.hpp"
 #include "datetime.hpp"
 
 enum class AlarmOption : uint8_t
@@ -17,8 +18,9 @@ struct alignas(4) Alarm
 	
 	// TODO
 	//char message[16];
-};
+} __attribute__((packed));
 
+// First 128 bytes of EEPROM is allocated for alarms => max number of alarms = 15
 class AlarmManager
 {
 public:
@@ -26,12 +28,17 @@ public:
 	{
 		ATOMIC_BLOCK (ATOMIC_RESTORESTATE)
 		{
-			number = eeprom_read_byte(0);
-			if (number == 0xff) // uninitialized
+			uint8_t version = eeprom_read_byte(version_ptr);
+			
+			if (version != current_version)
 			{
-				eeprom_update_byte(0, 0);
+				// EEPROM content is invalid
+				eeprom_update_byte(number_ptr, 0);
+				eeprom_update_byte(version_ptr, current_version);
 				number = 0;
 			}
+			else
+				number = eeprom_read_byte(number_ptr);
 		}
 	}
 	
@@ -41,7 +48,7 @@ public:
 		{
 			eeprom_update_block(&alarm, GetPointer(number), sizeof(Alarm));
 			number++;
-			eeprom_update_byte(0, number);
+			eeprom_update_byte(number_ptr, number);
 		}
 	}
 	
@@ -72,7 +79,7 @@ public:
 				eeprom_update_block(&alarm, GetPointer(i), sizeof(Alarm));
 			}
 			number--;
-			eeprom_update_byte(0, number);
+			eeprom_update_byte(number_ptr, number);
 		}
 	}
 	
@@ -81,7 +88,7 @@ public:
 		number = 0;
 		ATOMIC_BLOCK (ATOMIC_RESTORESTATE)
 		{
-			eeprom_update_byte(0, 0);
+			eeprom_update_byte(number_ptr, 0);
 		}
 	}
 	
@@ -97,6 +104,9 @@ private:
 	}
 	
 	size_t number;
+	
+	uint8_t* const number_ptr = (uint8_t*)0;
+	uint8_t* const version_ptr = (uint8_t*)1;
 };
 
 extern AlarmManager alarm_manager;

@@ -1,12 +1,34 @@
 #pragma once
 
-#include "timer2.hpp"
+#include <avr/io.h>
+#include <avr/eeprom.h>
+#include <util/atomic.h>
+#include "utility.hpp"
 
-// This class only manages timer 2
-// TODO: add frequency
+// This class manages timer 1
 class Beeper
 {
 public:
+	void Initialize()
+	{
+		EEPROMData data;
+		ATOMIC_BLOCK (ATOMIC_RESTORESTATE)
+		{
+			eeprom_read_block(&data, eeprom_data_ptr, sizeof(EEPROMData));
+			
+			if (data.version != current_version)
+			{
+				// EEPROM content is invalid
+				data.version = current_version;
+				data.loudness = 100;
+				data.frequency = 2000;
+				eeprom_update_block(&data, eeprom_data_ptr, sizeof(EEPROMData));
+			}
+		}
+		loudness = data.loudness;
+		frequency = data.frequency;
+	}
+
 	// This function should be called every 0.256ms ~ 1/4ms
 	void Process()
 	{
@@ -16,9 +38,9 @@ public:
 		if (n < beep_times * on_off_period)
 		{
 			if (n % on_off_period == on_time)
-				timer2.TurnOn();
+				StartBeep();
 			else if (n % on_off_period == off_time)
-				timer2.TurnOff();
+				StopBeep();
 		}
 		
 		n++;
@@ -35,7 +57,51 @@ public:
 	void TurnOff()
 	{
 		on = false;
-		timer2.TurnOff();
+		StopBeep();
+	}
+	
+	void StartBeep()
+	{
+		OC1B_DDR |= 1 << OC1B_BIT;
+		
+		// Timer 1 phase and frequency correct PWM, output OC1B pin, duty cycle depending on loudness
+		TCNT1 = 0;
+		ICR1 = F_CPU / 2 / frequency;
+		OCR1B = F_CPU / 4 / frequency * loudness / 100;
+		TCCR1A = (1 << COM1B1) | (1 << COM1B0) | (0 << WGM11) | (0 << WGM10);
+		TCCR1B = (1 << WGM13) | (0 << WGM12) | (0 << CS12) | (0 << CS11) | (1 << CS10);
+	}
+	
+	void StopBeep()
+	{
+		TCCR1A = 0;
+		TCCR1B = 0;
+		OC1B_DDR &= ~(1 << OC1B_BIT);
+	}
+	
+	uint8_t GetLoudness() { return loudness; }
+	uint16_t GetFrequency() { return frequency; }
+	
+	void SetLoudness(uint8_t loudness)
+	{
+		this->loudness = loudness;
+	}
+	
+	void SetFrequency(uint16_t frequency)
+	{
+		ATOMIC_BLOCK(ATOMIC_RESTORESTATE)
+		{
+			this->frequency = frequency;
+		}
+	}
+	
+	void SaveData()
+	{
+		ATOMIC_BLOCK(ATOMIC_RESTORESTATE)
+		{
+			EEPROMData data = { version: 0x21, loudness: loudness, frequency: frequency };
+			eeprom_update_block(&data, eeprom_data_ptr, sizeof(EEPROMData));
+		}
 	}
 	
 private:
@@ -48,6 +114,18 @@ private:
 
 	uint16_t n = 0;
 	bool on = false;
+	
+	uint8_t loudness; // in percents
+	uint16_t frequency;
+	
+	struct EEPROMData
+	{
+		uint8_t version;
+		uint8_t loudness;
+		uint16_t frequency;
+	} __attribute__((packed));
+	
+	EEPROMData* const eeprom_data_ptr = (EEPROMData*)0x80;
 };
 
 extern Beeper beeper;

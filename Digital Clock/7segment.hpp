@@ -9,13 +9,13 @@
 // mappings:
 // D0 to D6			-> 7-seg a to d
 // D7				-> 7-seg dp
-// B4, B2, B1, B0	-> 7-seg digits 1 to 4
+// B4, B3, B1, B0	-> 7-seg digits 1 to 4
 #define SEGMENT_PORT	PORTD
 #define SEGMENT_DDR		DDRD
 #define DIGIT_PORT		PORTB
 #define DIGIT_DDR		DDRB
 #define PDIGIT1			PB4
-#define PDIGIT2			PB2
+#define PDIGIT2			PB3
 #define PDIGIT3			PB1
 #define PDIGIT4			PB0
 
@@ -71,7 +71,7 @@ public:
 		ATOMIC_BLOCK(ATOMIC_RESTORESTATE)
 		{
 			for (uint8_t i = 0; i < 4; i++)
-			this->digits[i] = digits[i];
+				this->digits[i] = digits[i];
 			this->show_dots = show_dots;
 		}
 	}	

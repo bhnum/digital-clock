@@ -326,7 +326,7 @@ void App::PageManangeAlarms(Event event, Key key, const DateTime& time)
 			alarm_manager.GetAlarm(i, alarm);
 			if (alarm.option == AlarmOption::Once)
 			{
-				text.Print("\n ");
+				text.PrintProgMem(PSTR("\n "));
 				print_date(alarm.time);
 			}
 			else if (alarm.option == AlarmOption::EveryDay)
