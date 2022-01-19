@@ -69,19 +69,16 @@ public:
 	{
 		Key key = Key::None;
 		
-		ATOMIC_BLOCK(ATOMIC_RESTORESTATE)
-		{
-			if (buffer_up == 0xff)
-				key = Key::Up;
-			if (buffer_down == 0xff)
-				key = Key::Down;
-			if (buffer_left == 0xff)
-				key = Key::Left;
-			if (buffer_right == 0xff)
-				key = Key::Right;
-			if (buffer_ok == 0xff)
-				key = Key::Ok;
-		}
+		if (buffer_up == 0xff)
+			key = Key::Up;
+		if (buffer_down == 0xff)
+			key = Key::Down;
+		if (buffer_left == 0xff)
+			key = Key::Left;
+		if (buffer_right == 0xff)
+			key = Key::Right;
+		if (buffer_ok == 0xff)
+			key = Key::Ok;
 		
 		return key;
 	}

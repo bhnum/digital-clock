@@ -15,7 +15,7 @@ ISR(TIMER0_COMPB_vect)
 {
 	static uint8_t n = 0;
 	n++;
-	if (n % 8 == 0) // process key press in 2ms
+	if (n % 8 == 0) // process key press every 2ms
 		keypad.Process();
 }
 

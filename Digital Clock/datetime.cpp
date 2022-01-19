@@ -2,11 +2,11 @@
 
 const char DateTime::DayName[7][10] PROGMEM =
 {
-	"Sunday",
-	"Monday",
-	"Tuesday",
+	"Sunday   ",
+	"Monday   ",
+	"Tuesday  ",
 	"Wednesday",
-	"Thursday",
-	"Friday",
-	"Saturday",
+	"Thursday ",
+	"Friday   ",
+	"Saturday ",
 };

@@ -13,11 +13,12 @@ int main(void)
 	_delay_ms(1000);
 	
 	i2c.Initialize();
-	keypad.Initialize();
-	seven_segment.Initialize();
-	timer0.Initialize();
 	display.Initialize(true);
+	keypad.Initialize();
 	alarm_manager.Initialize();
+	seven_segment.Initialize();
+	beeper.Initialize();
+	timer0.Initialize();
 	
 	DateTime time, last_time;
 	App app = App();
@@ -44,7 +45,8 @@ int main(void)
 			app.Run(Event::KeyPress, key, time);
 		}
 		else
+		{
 			_delay_ms(100);
+		}
 	}
 }
-

@@ -3,11 +3,32 @@
 #include <util/delay.h>
 #include "alarm.hpp"
 
-static Alarm current_alarm;
+namespace strings
+{
+	const char Back[] PROGMEM = "Back";
+	const char EveryDay[] PROGMEM = "Every day";
+	const char Once[] PROGMEM = "Once";
+}
 
 // helper functions
 static void print_time(const DateTime& time, bool seconds = true)
 {
+	//char string1[] = "00:00";
+	//char string2[] = ":00";
+	//
+	//string1[0] += time.hour / 10;
+	//string1[1] += time.hour % 10;
+	//string1[3] += time.minute % 10;
+	//string1[4] += time.minute % 10;
+	//string2[1] += time.second / 10;
+	//string2[2] += time.second % 10;
+	//
+	//text.Print(string1);
+	//if (seconds)
+	//{
+		//text.Print(string2);
+	//}
+	
 	text.Print('0' + time.hour / 10);
 	text.Print('0' + time.hour % 10);
 	text.Print(':');
@@ -44,6 +65,8 @@ static inline uint8_t date_string_xpos_index(uint8_t index)
 	return 2 + index / 2 + index;
 }
 
+static Alarm current_alarm;
+
 void App::Run(Event event, Key key, const DateTime& time)
 {
 	if (time.second == 0)
@@ -56,6 +79,7 @@ void App::Run(Event event, Key key, const DateTime& time)
 			bool fire_alarm = alarm.time == time;
 			if (alarm.option == AlarmOption::EveryDay)
 				fire_alarm = alarm.time.hour == time.hour && alarm.time.minute == time.minute;
+				
 			if (fire_alarm)
 			{
 				current_alarm = alarm;
@@ -116,7 +140,6 @@ void App::PageVoid(Event event, Key key, const DateTime& time)
 {
 	if (event == Event::Start || event == Event::Refresh)
 	{
-		display.Clear();
 		display.TurnOff();
 	}
 		
@@ -139,9 +162,7 @@ void App::PageMainMenu(Event event, Key key, const DateTime& time)
 	if (event == Event::Start || event == Event::Refresh)
 	{
 		display.Clear();
-		text.PrintProgMem(PSTR(" Set Time\n"));
-		text.PrintProgMem(PSTR(" Alarms\n"));
-		text.PrintProgMem(PSTR(" Display Off\n"));
+		text.PrintProgMem(PSTR(" Set Time\n Alarms\n Display Off\n"));
 	}
 	
 	if (event == Event::Start || event == Event::Refresh || event == Event::TimeChange)
@@ -151,7 +172,6 @@ void App::PageMainMenu(Event event, Key key, const DateTime& time)
 		
 		text.GoToXY(6, 6);
 		text.PrintProgMem(DateTime::DayName[time.day_of_week - 1]);
-		text.PrintProgMem(PSTR("   "));
 		
 		text.GoToXY(5, 7);
 		print_date(time);
@@ -183,11 +203,6 @@ void App::PageSetTime(Event event, Key key, const DateTime& time)
 {
 	static int8_t index = 0;
 	
-	if (event == Event::Start)
-	{
-		index = 0;
-	}
-	
 	if (event == Event::Start || event == Event::Refresh)
 	{
 		display.Clear();
@@ -201,7 +216,6 @@ void App::PageSetTime(Event event, Key key, const DateTime& time)
 		
 		text.GoToXY(6, 4);
 		text.PrintProgMem(DateTime::DayName[time.day_of_week - 1]);
-		text.PrintProgMem(PSTR("   "));
 		
 		text.GoToXY(5, 6);
 		print_date(time);
@@ -227,6 +241,7 @@ void App::PageSetTime(Event event, Key key, const DateTime& time)
 		{
 			DateTime newtime = time;
 			int8_t delta = key == Key::Up ? 1 : -1;
+			
 			if (index == 0)
 				newtime.hour += delta * 10;
 			else if (index == 1)
@@ -253,10 +268,12 @@ void App::PageSetTime(Event event, Key key, const DateTime& time)
 				newtime.day += delta * 10;
 			else if (index == 12)
 				newtime.day += delta;
+				
 			newtime.normalize();
 			rtc.SetTime(newtime);
 		}
 	}
+	
 	if (index < 6)
 		text.GoToXY(6 + time_string_xpos_index(index), 3);
 	else if (index == 6)
@@ -305,7 +322,6 @@ void App::PageManangeAlarms(Event event, Key key, const DateTime& time)
 	
 	if (event == Event::Start)
 	{
-		edit_alarm_index = 0;
 		index = 0;
 	}
 	
@@ -313,27 +329,28 @@ void App::PageManangeAlarms(Event event, Key key, const DateTime& time)
 	if (event == Event::Start || event == Event::Refresh)
 	{
 		display.Clear();
-		text.PrintProgMem(PSTR("Alarms\n"));
-		text.PrintProgMem(PSTR(" Back"));
+		text.PrintProgMem(PSTR("Alarms\n Back"));
 		if (count < 6)
 		{
-			text.GoToXY(10, 1);
-			text.PrintProgMem(PSTR(" New"));
+			text.PrintProgMem(PSTR("      New"));
 		}
+		
 		for (uint8_t i = 0; i < count && i < 6; i++)
 		{
 			Alarm alarm;
 			alarm_manager.GetAlarm(i, alarm);
+			
+			uint8_t line = i + 2;
+			text.GoToXY(1, line);
 			if (alarm.option == AlarmOption::Once)
 			{
-				text.PrintProgMem(PSTR("\n "));
 				print_date(alarm.time);
 			}
 			else if (alarm.option == AlarmOption::EveryDay)
 			{
-				text.PrintProgMem(PSTR("\n Every day "));
+				text.PrintProgMem(strings::EveryDay);
 			}
-			text.Print(' ');
+			text.GoToXY(16, line);
 			print_time(alarm.time, false);
 		}
 	}
@@ -414,22 +431,17 @@ void App::PageEditAlarm(Event event, Key key, const DateTime& time)
 			text.PrintProgMem(PSTR("New Alarm"));
 		else
 			text.PrintProgMem(PSTR("Edit Alarm"));
-		text.GoToXY(14, 0);
-		text.PrintProgMem(PSTR(" Back\n"));
+		text.PrintProgMem(PSTR("     Back\n"));
 		
 		if (edit_alarm_index != -1)
-		{
 			text.PrintProgMem(PSTR(" Change\t\t Delete"));
-		}
 		else
-		{
 			text.PrintProgMem(PSTR(" Create"));
-		}
 		
 		text.GoToXY(1, 2);
-		text.PrintProgMem(PSTR("Once"), alarm.option == AlarmOption::Once);
+		text.PrintProgMem(strings::Once, alarm.option == AlarmOption::Once);
 		text.GoToXY(12, 2);
-		text.PrintProgMem(PSTR("Every day"), alarm.option == AlarmOption::EveryDay);
+		text.PrintProgMem(strings::EveryDay, alarm.option == AlarmOption::EveryDay);
 		
 		text.GoToXY(7, 4);
 		print_time(alarm.time, false);
@@ -469,17 +481,17 @@ void App::PageEditAlarm(Event event, Key key, const DateTime& time)
 				alarm.option = AlarmOption::EveryDay;
 			}
 		}
-		else if (key == Key::Right || key == Key::Left ||
-			(index < 5 && (key == Key::Up || key == Key::Down)))
+		else if (key == Key::Right || key == Key::Left /*||
+			(index < 5 && (key == Key::Up || key == Key::Down))*/)
 		{
 			uint8_t max_index = alarm.option == AlarmOption::Once ? 14 : 8;
-			if (key == Key::Right || key == Key::Down)
+			if (key == Key::Right /*|| key == Key::Down*/)
 			{
 				index = min(max_index, uint8_t(index + 1));
 				if (index == 2 && edit_alarm_index == -1)
 					index++;
 			}
-			else if (key == Key::Left || key == Key::Up)
+			else if (key == Key::Left /*|| key == Key::Up*/)
 			{
 				index = max(0, index - 1);
 				if (index == 2 && edit_alarm_index == -1)

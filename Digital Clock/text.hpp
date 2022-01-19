@@ -24,24 +24,32 @@ public:
 				for (uint8_t i = 0; i < 4 - x % 4; i++)
 					Print(' ', invert);
 				break;
-			}
+		}
+		
+#ifdef SUPPORT_CURSOR
 			case '\a': // print cursor
 				set_cursor_next = true;
 				break;
+#endif
+
 			default:
 			{
 				if (X() == MaxX())
 					Print('\n');
+					
+#ifdef SUPPORT_CURSOR
 				if (!set_cursor_next)
 				{
-					display.DrawProgMem((uint8_t*)&font[c - font_begin], 1, char_width, invert);
-					break;
+					set_cursor_next = false;
+					uint8_t d[char_width];
+					for (uint8_t i = 0; i < char_width; i++)
+						d[i] = pgm_read_byte(&font[c - font_begin][i]) | pgm_read_byte(&cursor[i]);
+					display.Draw(d, 1, char_width, invert);
+						break;
 				}
-				set_cursor_next = false;
-				uint8_t d[char_width];
-				for (uint8_t i = 0; i < char_width; i++)
-					d[i] = pgm_read_byte(&font[c - font_begin][i]) | pgm_read_byte(&cursor[i]);
-				display.Draw(d, 1, char_width, invert);
+#endif
+
+				display.DrawProgMem((uint8_t*)&font[c - font_begin], 1, char_width, invert);
 				break;
 			}
 		}
@@ -51,8 +59,6 @@ public:
 	{
 		for (; *str != '\0'; str++)
 			Print(*str, invert);
-		if (set_cursor_next)
-			Print(' ', invert);
 	}
 	
 	void PrintProgMem(const char* str, bool invert = false)
@@ -64,8 +70,6 @@ public:
 				break;
 			Print(c, invert);
 		}
-		if (set_cursor_next)
-			Print(' ', invert);
 	}
 	
 	void GoToXY(uint8_t x, uint8_t y)
@@ -84,7 +88,10 @@ private:
 	static const char font_begin = ' ';
 	static const uint8_t font[][char_width];
 	static const uint8_t cursor[char_width];
+	
+#ifdef SUPPORT_CURSOR
 	bool set_cursor_next = false;
+#endif
 };
 
 extern Text text;

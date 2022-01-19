@@ -13,7 +13,7 @@ inline uint8_t modulo(int8_t a, uint8_t q)
 {
 	int8_t mod = a % q;
 	if (mod < 0)
-	mod += q;
+		mod += q;
 	return mod;
 }
 

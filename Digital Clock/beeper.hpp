@@ -11,22 +11,7 @@ class Beeper
 public:
 	void Initialize()
 	{
-		EEPROMData data;
-		ATOMIC_BLOCK (ATOMIC_RESTORESTATE)
-		{
-			eeprom_read_block(&data, eeprom_data_ptr, sizeof(EEPROMData));
-			
-			if (data.version != current_version)
-			{
-				// EEPROM content is invalid
-				data.version = current_version;
-				data.loudness = 100;
-				data.frequency = 2000;
-				eeprom_update_block(&data, eeprom_data_ptr, sizeof(EEPROMData));
-			}
-		}
-		loudness = data.loudness;
-		frequency = data.frequency;
+		LoadData();
 	}
 
 	// This function should be called every 0.256ms ~ 1/4ms
@@ -85,6 +70,7 @@ public:
 	void SetLoudness(uint8_t loudness)
 	{
 		this->loudness = loudness;
+		OCR1B = F_CPU / 4 / frequency * loudness / 100;
 	}
 	
 	void SetFrequency(uint16_t frequency)
@@ -93,15 +79,37 @@ public:
 		{
 			this->frequency = frequency;
 		}
+		ICR1 = F_CPU / 2 / frequency;
+		OCR1B = F_CPU / 4 / frequency * loudness / 100;
 	}
 	
 	void SaveData()
 	{
 		ATOMIC_BLOCK(ATOMIC_RESTORESTATE)
 		{
-			EEPROMData data = { version: 0x21, loudness: loudness, frequency: frequency };
+			EEPROMData data = { version: current_version, loudness: loudness, frequency: frequency };
 			eeprom_update_block(&data, eeprom_data_ptr, sizeof(EEPROMData));
 		}
+	}
+	
+	void LoadData()
+	{
+		EEPROMData data;
+		ATOMIC_BLOCK (ATOMIC_RESTORESTATE)
+		{
+			eeprom_read_block(&data, eeprom_data_ptr, sizeof(EEPROMData));
+			
+			if (data.version != current_version)
+			{
+				// EEPROM content is invalid
+				data.version = current_version;
+				data.loudness = 100;
+				data.frequency = 2000;
+				eeprom_update_block(&data, eeprom_data_ptr, sizeof(EEPROMData));
+			}
+		}
+		loudness = data.loudness;
+		frequency = data.frequency;
 	}
 	
 private:

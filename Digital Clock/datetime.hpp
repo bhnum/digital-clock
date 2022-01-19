@@ -25,14 +25,10 @@ public:
 		hour += posdiv(minute, 60);
 		minute = modulo(minute, 60);
 		
-		day += posdiv(hour, 24);
-		day_of_week += posdiv(hour, 24);
 		hour = modulo(hour, 24);
 		
-		month += posdiv(day - 1, month_days(month, year));
 		day = modulo(day - 1, month_days(month, year)) + 1;
 		
-		year += posdiv(month - 1, 12);
 		month = modulo(month - 1, 12) + 1;
 		
 		year = modulo(year, 100);
